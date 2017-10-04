@@ -1,0 +1,264 @@
+---
+title: "Zombies Homework in Module 8"
+author: "Zeynep Senveli"
+date: "10/1/2017"
+output: html_document
+---
+
+
+Reading in the Zombies.csv file:
+```{r}
+library(ggplot2)
+library(curl)
+f <- f <- curl("https://raw.githubusercontent.com/fuzzyatelin/fuzzyatelin.github.io/master/AN597_Fall17/zombies.csv")
+d <- read.csv(f, header = TRUE, sep = ",", stringsAsFactors = FALSE)
+head(d)
+```
+
+Calculating the population mean for different variables:
+```{r}
+mean.height <- mean(d$height)
+mean.height
+mean.weight <- mean(d$weight)
+mean.weight
+mean.zk <- mean(d$zombies_killed)
+mean.zk
+mean.edu <- mean(d$years_of_education)
+mean.edu
+mean.age <- mean(d$age)
+mean.age
+```
+
+Since the embedded function uses the sample degrees of freedom (n-1), I need to write up a new function to calculate the standard deviation for the population:
+```{r}
+stadev <- function(x) {
+standard.deviation <- sqrt(sum((x - mean(x))^2)/(length(d$id)))
+return(standard.deviation)
+}
+```
+
+Calculating the population standard deviation for the variables:
+```{r}
+stdev.height <- stadev(d$height)
+stdev.height
+stdev.weight <- stadev(d$weight)
+stdev.weight
+stdev.zk <- stadev(d$zombies_killed)
+stdev.zk
+stdev.edu <- stadev(d$years_of_education)
+stdev.edu
+stdev.age <- stadev(d$age)
+stdev.age 
+```
+
+Plotting the variables by gender using ggplot2:
+```{r}
+library(ggplot2)
+height.boxplot <- ggplot(data = d, aes(x = gender, y = height))
+height.boxplot <- height.boxplot + geom_boxplot()
+height.boxplot <- height.boxplot + theme(axis.text.x = element_text(angle = 90))
+height.boxplot <- height.boxplot + ylab("Height")
+height.boxplot
+weight.boxplot <- ggplot(data = d, aes(x = gender, y = weight))
+weight.boxplot <- weight.boxplot + geom_boxplot()
+weight.boxplot <- weight.boxplot + theme(axis.text.x = element_text(angle = 90))
+weight.boxplot <- weight.boxplot + ylab("Weight")
+weight.boxplot
+zk.boxplot <- ggplot(data = d, aes(x = gender, y = zombies_killed))
+zk.boxplot <- zk.boxplot + geom_boxplot()
+zk.boxplot <- zk.boxplot + theme(axis.text.x = element_text(angle = 90))
+zk.boxplot <- zk.boxplot + ylab("Zombies Killed")
+zk.boxplot
+edu.boxplot <- ggplot(data = d, aes(x = gender, y = years_of_education))
+edu.boxplot <- edu.boxplot + geom_boxplot()
+edu.boxplot <- edu.boxplot + theme(axis.text.x = element_text(angle = 90))
+edu.boxplot <- edu.boxplot + ylab("Years of Education")
+edu.boxplot
+age.boxplot <- ggplot(data = d, aes(x = gender, y = age))
+age.boxplot <- age.boxplot + geom_boxplot()
+age.boxplot <- age.boxplot + theme(axis.text.x = element_text(angle = 90))
+age.boxplot <- age.boxplot + ylab("Age")
+age.boxplot
+```
+
+Making scatter plots for height and weight by age:
+```{r}
+height.scplot <- ggplot(data = d, aes(x = age, y = height))
+height.scplot <- height.scplot + xlab("Age") + ylab("Height")  
+height.scplot <- height.scplot + geom_point() 
+height.scplot <- height.scplot + theme(legend.position = "bottom", legend.title = element_blank()) 
+height.scplot
+weight.scplot <- ggplot(data = d, aes(x = age, y = weight))
+weight.scplot <- weight.scplot + xlab("Age") + ylab("Weight")  
+weight.scplot <- weight.scplot + geom_point() 
+weight.scplot <- weight.scplot + theme(legend.position = "bottom", legend.title = element_blank()) 
+weight.scplot
+```
+Plotting histograms to see if the quantitative variables have been drawn from a normally distributed population:
+```{r}
+par(mfrow = c(2, 3))  
+attach(d)
+hist(height, freq = FALSE, col = "tomato4", main = "Height Distribution", xlab = "Height", 
+    ylab = "Density")
+hist(weight, freq = FALSE, col = "cyan4", main = "Weight Distribution", xlab = "Weight", 
+    ylab = "Density")
+hist(age, freq = FALSE, col = "olivedrab", main = "Age Distribution", xlab = "Age", 
+    ylab = "Density")
+hist(zombies_killed, freq = FALSE, col = "coral", main = "Killed Zombie Distribution", xlab = "Zombies Killed",     ylab = "Density")
+hist(years_of_education, freq = FALSE, col = "lemonchiffon4", main = "Distribution of Years of Education", xlab =       "Years of Education", ylab = "Density")
+detach(d)
+```
+According to the histograms, height, weight, and age seem to be drawn from normally distributions when zombies killed and years of education are skewed to the right (positively skewed) so possibly a Poisson distribution. 
+
+
+Sampling (once) a set of 30 survivors and calculating the sample's mean and standard deviation:
+```{r}
+s <- d[sample(nrow(d), 30), ]
+s
+```
+
+Means of the quantitative variables in my sample s of size 30:
+```{r}
+mean.s.height <- mean(s$height)
+mean.s.height
+mean.s.weight <- mean(s$weight)
+mean.s.weight
+mean.s.age <- mean(s$age)
+mean.s.age
+mean.s.zk <- mean(s$zombies_killed)
+mean.s.zk
+mean.s.edu <- mean(s$years_of_education)
+mean.s.edu
+```
+Standard deviations of the quantitative variables in my sample s of size 30:
+```{r}
+sd.s.height <- sd(s$height)
+sd.s.height
+sd.s.weight <- sd(s$weight)
+sd.s.weight 
+sd.s.age <- sd(s$age)
+sd.s.age
+sd.s.zk <- sd(s$zombies_killed)
+sd.s.zk 
+sd.s.edu <- sd(s$years_of_education)
+sd.s.edu
+```
+Calculating the standard error of the sample s:
+```{r}
+se.s.height <- sd.s.height/sqrt(30)
+se.s.height
+se.s.weight <- sd.s.weight/sqrt(30)
+se.s.weight
+se.s.age <- sd.s.age/sqrt(30)
+se.s.age
+se.s.zk <- sd.s.zk/sqrt(30)
+se.s.zk
+se.s.edu <- sd.s.edu/sqrt(30)
+se.s.edu
+```
+
+Building confidence intervals of 95% for the quantitative variables for the sample s:
+```{r}
+lower.CI.s.height <- mean(s$height)-(qt(p=0.975,df=29)*se.s.height)
+upper.CI.s.height <- mean(s$height)+(qt(p=0.975,df=29)*se.s.height)
+CI.s.height <- c(lower.CI.s.height, upper.CI.s.height)
+CI.s.height 
+lower.CI.s.weight <- mean(s$weight)-(qt(p=0.975,df=29)*se.s.weight)
+upper.CI.s.weight <- mean(s$weight)+(qt(p=0.975,df=29)*se.s.weight)
+CI.s.weight <- c(lower.CI.s.weight, upper.CI.s.weight)
+CI.s.weight
+lower.CI.s.age <- mean(s$age)-(qt(p=0.975,df=29)*se.s.age)
+upper.CI.s.age <- mean(s$height)+(qt(p=0.975,df=29)*se.s.age)
+CI.s.age <- c(lower.CI.s.age, upper.CI.s.age)
+CI.s.age
+lower.CI.s.zk <- mean(s$zombies_killed)-(qpois(p=0.975,lambda=mean(s$zombies_killed))*se.s.zk)
+upper.CI.s.zk <- mean(s$zombies_killed)+(qpois(p=0.975,lambda=mean(s$zombies_killed))*se.s.zk)
+CI.s.zk <- c(lower.CI.s.zk, upper.CI.s.zk)
+CI.s.zk #Confidence Inteval - Sample - Zombies killed
+lower.CI.s.edu <- mean(s$years_of_education)-(qpois(p=0.975,lambda=mean(s$years_of_education))*se.s.edu)
+upper.CI.s.edu <- mean(s$years_of_education)+(qpois(p=0.975,lambda=mean(s$years_of_education))*se.s.edu)
+CI.s.edu <- c(lower.CI.s.edu, upper.CI.s.edu)
+CI.s.edu #Confidence Inteval - Sample - Years of Education
+```
+
+Drawing 99 samples (each of size 30) from zombie survivor population:
+
+#height and mean
+```{r}
+k <- 99  
+ht <- NULL
+for (i in 1:k) {
+    ht[[i]] <- sample(s$height)
+}
+head(ht)
+
+mh <- NULL
+for (i in 1:k) {
+    mh[i] <- mean(ht[[i]])
+}
+mean(mh)
+```
+#weight and mean
+```{r}
+k <- 99  
+wt <- NULL
+for (i in 1:k) {
+    wt[[i]] <- sample(s$weight)
+}
+head(wt)
+
+mw <- NULL
+for (i in 1:k) {
+    mw[i] <- mean(wt[[i]])
+}
+mean(mw)
+```
+
+#age and mean
+```{r}
+k <- 99  
+at <- NULL
+for (i in 1:k) {
+    at[[i]] <- sample(s$age)
+}
+head(at)
+
+ma <- NULL
+for (i in 1:k) {
+    ma[i] <- mean(at[[i]])
+}
+mean(ma)
+```
+
+#zombies killed and mean
+```{r}
+k <- 99  
+zt <- NULL
+for (i in 1:k) {
+    zt[[i]] <- sample(s$zombies_killed)
+}
+head(zt)
+
+mz <- NULL
+for (i in 1:k) {
+    mz[i] <- mean(zt[[i]])
+}
+mean(mz)
+```
+
+#years of education and mean
+```{r}
+k <- 99  
+et <- NULL
+for (i in 1:k) {
+    et[[i]] <- sample(s$years_of_education)
+}
+head(et)
+
+me <- NULL
+for (i in 1:k) {
+    me[i] <- mean(et[[i]])
+}
+mean(me)
+```
+
